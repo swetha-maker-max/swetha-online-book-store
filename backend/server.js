@@ -12,7 +12,6 @@ app.use(express.json());
 mongoose.connect("mongodb://127.0.0.1:27017/bookstore")
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log("Error connecting MongoDB:", err));
-
 // Schema
 const CartSchema = new mongoose.Schema({
   name: String,
