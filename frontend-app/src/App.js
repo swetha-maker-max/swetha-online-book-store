@@ -21,20 +21,39 @@ function App() {
     getCart();
   }, []);
 
-  const addToCart = (book) => {
-    fetch(`${API_URL}/cart`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(book)
-    })
-      .then(res => res.json())
-      .then(data => {
-        alert(data.message);
-        getCart();
-      });
-  };
+  app.post("/cart", async (req, res) => {
+  try {
+    console.log("Request body:", req.body);
+
+    const { name, price, quantity } = req.body;
+
+    if (!name || !price) {
+      return res.status(400).json({ message: "Missing name or price" });
+    }
+
+    let item = await Cart.findOne({ name });
+
+    if (item) {
+      item.quantity += quantity ? quantity : 1;
+      await item.save();
+      return res.json({ message: "Cart updated", item });
+    }
+
+    const newItem = new Cart({
+      name,
+      price,
+      quantity: quantity ? quantity : 1,
+    });
+
+    await newItem.save();
+
+    res.json({ message: "Item added to cart", item: newItem });
+
+  } catch (err) {
+    console.error("Cart Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
   const deleteItem = (id) => {
     fetch(`${API_URL}/cart/${id}`, {
