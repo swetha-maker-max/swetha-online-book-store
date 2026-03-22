@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+const API_URL = "https://swetha-online-book-store.onrender.com";
+
 function App() {
   const [books] = useState([
     { name: "Harry Potter", price: 500 },
@@ -10,7 +12,7 @@ function App() {
   const [cart, setCart] = useState([]);
 
   const getCart = () => {
-    fetch("http://localhost:5000/cart")
+    fetch(`${API_URL}/cart`)
       .then(res => res.json())
       .then(data => setCart(data));
   };
@@ -20,22 +22,22 @@ function App() {
   }, []);
 
   const addToCart = (book) => {
-    fetch("http://localhost:5000/cart", {
+    fetch(`${API_URL}/cart`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(book)
     })
-      .then(res => res.text())
+      .then(res => res.json())
       .then(data => {
-        alert(data);
+        alert(data.message);
         getCart();
       });
   };
 
   const deleteItem = (id) => {
-    fetch(`http://localhost:5000/cart/${id}`, {
+    fetch(`${API_URL}/cart/${id}`, {
       method: "DELETE"
     })
       .then(() => getCart());
